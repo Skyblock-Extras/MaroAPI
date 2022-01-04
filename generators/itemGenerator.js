@@ -71,7 +71,6 @@ const parseItems = async function (base64, db) {
 
         if (enchants.length == 1) {
           const value = ExtraAttributes.enchantments[enchants[0]];
-
           price = db[`${enchants[0]}_${value}`] ?? 0;
           itemName = helper.capitalize(`${enchants[0]} ${value}`);
         }
@@ -82,6 +81,7 @@ const parseItems = async function (base64, db) {
           if (constants.blocked_enchants[itemId]?.includes(enchant[0])) continue;
 
           if (constants.allowed_enchants.includes(enchant[0])) {
+            // TODO: Factor Depreciation for enchants
             price += db[`${enchant[0]}_${enchant[1]}`] ?? 0;
           }
         }
@@ -124,7 +124,7 @@ const parseItems = async function (base64, db) {
       }
 
       if (ExtraAttributes.gemstone_slots) {
-        price += ExtraAttributes.gemstone_slots * db['gemstone_chamber'];
+        price += ExtraAttributes.gemstone_slots * db['gemstone_chamber'] ?? 0;
       }
 
       if (ExtraAttributes.drill_part_upgrade_module) {

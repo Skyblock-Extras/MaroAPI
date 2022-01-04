@@ -4,9 +4,10 @@ const helper = require('../src/helper');
 const getPricesFromDb = function (pet, db) {
   const lvl1 = db[`lvl_1_${pet.tier}_${pet.type}`.toLowerCase()];
   const lvl100 = db[`lvl_100_${pet.tier}_${pet.type}`.toLowerCase()];
+  const lvl102 = db[`lvl_102_${pet.tier}_${pet.type}`.toLowerCase()];
   const lvl200 = db[`lvl_200_${pet.tier}_${pet.type}`.toLowerCase()];
 
-  return { lvl1, lvl100, lvl200 };
+  return { lvl1, lvl100, lvl102, lvl200 };
 };
 
 const calculateSkillLevel = function (pet) {
@@ -35,8 +36,8 @@ const calculateSkillLevel = function (pet) {
 };
 
 const getPetPrice = function (pet, db) {
-  const { lvl1, lvl100, lvl200 } = getPricesFromDb(pet, db);
-  if (lvl1 == undefined || lvl100 == undefined) {
+  const { lvl1, lvl100, lvl102, lvl200 } = getPricesFromDb(pet, db);
+  if (lvl1 == undefined || (lvl100 == undefined && lvl102 == undefined)) {
     return pet;
   }
 
@@ -51,9 +52,9 @@ const getPetPrice = function (pet, db) {
 
   if (data.level > 100 && data.level < 200) {
     const level = data.level.toString().slice(1);
-    const baseFormula = (lvl200 - lvl100) / 100;
+    const baseFormula = (lvl200 - lvl102) / 100;
 
-    price = baseFormula * level + lvl100;
+    price = baseFormula * level + lvl102;
   }
 
   if (pet.heldItem && data.level != 200) {

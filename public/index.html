@@ -4,15 +4,21 @@
     <title>Maro's API Documentation</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet" />
-    <link rel="icon" href="https://i.imgur.com/6LJ9EdE.png" />
+    <link rel="icon" href="https://i.imgur.com/6LJ9EdE.png"/>
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://maro.skyblockextras.com">
+    <meta property="og:title" content="Maro - Skyblock Extras">
+    <meta property="og:description" content="Forked version of Maro Networth Calculator">
+    <meta property="og:image" content="https://i.imgur.com/6LJ9EdE.png">
+    <meta property="og:site_name" content="maro.skyblockextras.com">
   </head>
 
   <body class="bg-gray-800 text-gray-100">
     <div class="container mx-auto px-4">
       <div>
         <section class="py-4 px-4 text-center">
-          <a href="https://discord.com/oauth2/authorize?client_id=716045085472718859&scope=bot&permissions=2147795008&scope=bot%20applications.commands">
-            <img class="mx-auto mb-6 h-25 w-auto" src="https://i.imgur.com/6LJ9EdE.png" draggable="false" />
+          <a href="https://skyblockextras.com">
+            <img class="mx-auto mb-6 h-25 w-auto" src="https://i.imgur.com/6LJ9EdE.png" draggable="false"  alt="Maro Logo"/>
           </a>
           <div class="mx-auto px-4">
             <div class="text-center">
@@ -41,7 +47,7 @@
                 <p>Calculates Networth category data for a player. Note that purse and bank need to be added to the total networth value.</p>
 
                 <p class="py-3 font-bold">Usage</p>
-                <p class="py-3 px-6 bg-gray-800 rounded-md overflow-auto">https://nariah-dev.com/api/networth/categories</p>
+                <p class="py-3 px-6 bg-gray-800 rounded-md overflow-auto">http://maro.skyblockextras.com/api/networth/categories</p>
 
                 <p class="py-3 font-bold">Body</p>
                 <table class="w-full bg-gray-800">
@@ -82,7 +88,7 @@
                 <p>Displays lowest bin data for all items on the auction house.</p>
 
                 <p class="py-3 font-bold">Usage</p>
-                <p class="py-3 px-6 bg-gray-800 rounded-md overflow-auto">https://nariah-dev.com/api/auctions/all</p>
+                <p class="py-3 px-6 bg-gray-800 rounded-md overflow-auto">http://maro.skyblockextras.com/api/auctions/all</p>
 
                 <p class="py-3 font-bold">Note</p>
                 <p>Enchanted Books and Pets have custom ID's, please see the endpoint for more information.</p>
@@ -102,7 +108,7 @@
                 <p>Get's average auction statistics for an item. Which include; average, median, min, max, mode and mean values.</p>
 
                 <p class="py-3 font-bold">Usage</p>
-                <p class="py-3 px-6 bg-gray-800 rounded-md overflow-auto">https://nariah-dev.com/api/auctions/quickStats/:itemId</p>
+                <p class="py-3 px-6 bg-gray-800 rounded-md overflow-auto">http://maro.skyblockextras.com/api/auctions/quickStats/:itemId</p>
 
                 <p class="py-3 font-bold">Parameters</p>
                 <table class="w-full bg-gray-800">
@@ -133,7 +139,7 @@
                 <p>Displays product price data for all items on the Bazaar.</p>
 
                 <p class="py-3 font-bold">Usage</p>
-                <p class="py-3 px-6 bg-gray-800 rounded-md overflow-auto">https://nariah-dev.com/api/bazaar/all</p>
+                <p class="py-3 px-6 bg-gray-800 rounded-md overflow-auto">http://maro.skyblockextras.com/api/bazaar/all</p>
 
                 <p class="py-3 font-bold">Note</p>
                 <p>This endpoint provides information that matters about current Bazaar products.</p>
@@ -143,8 +149,9 @@
         </section>
 
         <footer class="p-8 text-gray-500 text-center">
-          <p>Created by <a class="text-indigo-500">Nariah</a></p>
-          <p>Support Discord Server: <a href="https://discord.gg/CAMZpQyCxU" class="text-indigo-500 hover:underline">Click here</a></p>
+          <p>Created by <a class="text-indigo-500">Nariah</a>, Forked by <a class="text-indigo-500">Skyblock Extras</a></p>
+          <p>Support Discord Server: <a href="https://discord.gg/sbe" class="text-indigo-500 hover:underline">Click here</a></p>
+          <p>Source Code: <a href="https://github.com/AlphaOriginLLC/MaroAPI" class="text-indigo-500 hover:underline">Click here</a></p>
         </footer>
       </div>
     </div>

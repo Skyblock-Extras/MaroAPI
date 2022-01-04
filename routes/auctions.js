@@ -6,7 +6,11 @@ let auctions = [];
 
 const retrievePrices = async function () {
   for (const item of await db.auctions.find()) {
-    const auction = { id: item.id, name: item.auction.name, lowestBin: item.auction.price };
+    const auction = {
+      id: item.id,
+      name: item.auction.name,
+      value : item.auction.value
+    };
     const index = auctions.findIndex(i => i.id === item.id);
 
     if (index === -1) auctions.push(auction);
