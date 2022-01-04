@@ -6,6 +6,7 @@ const db = require('../storage/database');
 let auctions = {};
 
 const fetchAuctions = async function (pages = 0) {
+
   for (let i = 0; i <= pages; i++) {
     const auctionPage = await api.getAuctionPage(i);
     if (!auctionPage.success) continue;
@@ -19,14 +20,12 @@ const fetchAuctions = async function (pages = 0) {
 
 const updateAuctions = async function () {
   Object.keys(auctions).forEach(async item => {
-    const sales = auctions[item].map(i => ({ price: i.price, count: i.count }));
+    const sales = auctions[item].map(i => ({ price: i.price, count: i.count, value : i.value}));
 
-    const lowest = Math.min(...sales.map(i => i.price));
-    const auction = auctions[item].filter(i => i.price === lowest)[0];
-
+    const lowest = Math.min(...sales.map(i => i.value));
+    const auction = auctions[item].filter(i => i.value === lowest)[0];
     await db.auctions.updateOne({ id: item.toUpperCase() }, { sales: sales, auction: auction }, { upsert: true });
   });
-
   auctions = {};
   setTimeout(() => fetchAuctions(), 30 * 10000);
 };
@@ -46,7 +45,8 @@ const processAuctions = async function (data) {
         price: auction.starting_bid,
         seller: auction.auctioneer,
         ending: auction.end,
-        count: item.Count.value
+        count: item.Count.value,
+		value: (item.Count.value <= 1) ? auction.starting_bid : auction.starting_bid / item.Count.value
       };
 
       Object.keys(auctions).includes(id) ? auctions[id].push(format) : (auctions[id] = [format]);
@@ -71,7 +71,7 @@ const getAttributes = function (item, itemName) {
     const pet = JSON.parse(item.petInfo.value);
     const data = petGenerator.calculateSkillLevel(pet);
 
-    if (data.level == 1 || data.level == 100 || data.level == 200) {
+    if (data.level == 1 || data.level == 100 || data.level == 102 || data.level == 200) {
       itemId = `lvl_${data.level}_${pet.tier}_${pet.type}`;
       itemName = `[Lvl ${data.level}] ${helper.capitalize(`${pet.tier} ${pet.type}`)}`;
     }

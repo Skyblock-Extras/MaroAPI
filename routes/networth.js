@@ -6,8 +6,17 @@ const db = require('../storage/database');
 let prices = {};
 
 const retrievePrices = async function () {
+
   for (const item of await db.auctions.find()) {
-    prices[item.id.toLowerCase()] = parseInt(item.auction.price);
+    // Temporarily (?) find CPC of outdated auctions
+    let value = item.auction.value ?? 0;
+    let lower = item.id.toLowerCase();
+    // if(value == 0 && !(lower in prices)){
+    //   let count = item.auction.count;
+    //   value = (count <= 1) ? item.auction.price : item.auction.price / count;
+    //   unfoundAuctions[lower] = value;
+    // }
+    prices[lower] = parseInt(value);
   }
 
   for (const product of await db.bazaar.find()) {
@@ -22,12 +31,12 @@ const createJsonResponse = function (res, code, reason) {
   });
 };
 
+
 router.post('/categories', async (req, res) => {
   const profile = req.body.data;
 
   try {
     const items = await itemGenerator.getItems(profile, prices);
-
     if (items.no_inventory) {
       return createJsonResponse(res, 404, 'This player has their inventory API disabled.');
     }
@@ -37,6 +46,7 @@ router.post('/categories', async (req, res) => {
       data: await networthGenerator.getNetworth(items, profile)
     });
   } catch (e) {
+    console.error(e);
     return createJsonResponse(res, 500, 'An internal server error occurred.');
   }
 });
