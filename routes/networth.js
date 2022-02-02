@@ -22,6 +22,13 @@ const retrievePrices = async function () {
   for (const product of await db.bazaar.find()) {
     prices[product.id.toLowerCase()] = parseInt(product.buyPrice);
   }
+
+  for (const item of await db.hardcode.find()){
+    let lower = item.id.toLowerCase();
+    if (prices[lower] > item.price){
+      prices[lower] = item.price;
+    }
+  }
 };
 
 const createJsonResponse = function (res, code, reason) {

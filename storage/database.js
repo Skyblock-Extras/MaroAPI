@@ -26,5 +26,6 @@ createDatabaseConnection();
 module.exports = {
   bazaar: require('./schemas/bazaar'),
   auctions: require('./schemas/auctions'),
-  leaderboard: require('./schemas/leaderboard')
+  leaderboard: require('./schemas/leaderboard'),
+  hardcode: require('./schemas/hardcodedValues')
 };
