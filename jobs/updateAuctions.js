@@ -25,7 +25,7 @@ const updateAuctions = async function () {
 
         const lowest = Math.min(...sales.map(i => i.value));
         const auction = auctions[item].filter(i => i.value === lowest)[0];
-        // await db.auctions.updateOne({ id: item.toUpperCase() }, { sales: sales, auction: auction }, { upsert: true });
+        await db.auctions.updateOne({ id: item.toUpperCase() }, { sales: sales, auction: auction }, { upsert: true });
     });
     auctions = {};
     await db.dupes.deleteMany({})
