@@ -36,4 +36,4 @@ const fetchProducts = async function () {
   return await updateProducts();
 };
 
-if (process.env.NODE_APP_INSTANCE === '0') fetchProducts();
+// if (process.env.NODE_APP_INSTANCE === '0') fetchProducts();

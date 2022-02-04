@@ -3,6 +3,7 @@ const helper = require('../src/helper');
 const router = require('express').Router();
 
 let auctions = [];
+let dupedIds = [];
 
 const retrievePrices = async function () {
   for (const item of await db.auctions.find()) {
@@ -15,6 +16,14 @@ const retrievePrices = async function () {
 
     if (index === -1) auctions.push(auction);
     else auctions[index] = auction;
+  }
+  dupedIds = [];
+  for(const dupe of await db.dupes.find()){
+    const item = {
+      uuid: dupe.uuid,
+      count: dupe.count
+    }
+    dupedIds.push(item);
   }
 };
 
@@ -29,6 +38,20 @@ router.get('/all', async (req, res) => {
   return res.status(200).json({
     status: 200,
     data: auctions
+  });
+});
+
+router.get('/dupes', async (req, res) => {
+  if (dupedIds.length === 0 || dupedIds.length === undefined) {
+    return res.status(404).json({
+      status: 404,
+      data: 'No auctions found.'
+    });
+  }
+
+  return res.status(200).json({
+    status: 200,
+    data: dupedIds
   });
 });
 

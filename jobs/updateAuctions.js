@@ -4,83 +4,95 @@ const helper = require('../src/helper');
 const db = require('../storage/database');
 
 let auctions = {};
+let tempDupedIDs = {};
 
 const fetchAuctions = async function (pages = 0) {
 
-  for (let i = 0; i <= pages; i++) {
-    const auctionPage = await api.getAuctionPage(i);
-    if (!auctionPage.success) continue;
+    for (let i = 0; i <= pages; i++) {
+        const auctionPage = await api.getAuctionPage(i);
+        if (!auctionPage.success) continue;
 
-    pages = auctionPage.totalPages - 1;
-    await processAuctions(auctionPage);
-  }
+        pages = auctionPage.totalPages - 1;
+        await processAuctions(auctionPage);
+    }
 
-  return await updateAuctions();
+    return await updateAuctions();
 };
 
 const updateAuctions = async function () {
-  Object.keys(auctions).forEach(async item => {
-    const sales = auctions[item].map(i => ({ price: i.price, count: i.count, value : i.value}));
+    Object.keys(auctions).forEach(async item => {
+        const sales = auctions[item].map(i => ({price: i.price, count: i.count, value: i.value}));
 
-    const lowest = Math.min(...sales.map(i => i.value));
-    const auction = auctions[item].filter(i => i.value === lowest)[0];
-    await db.auctions.updateOne({ id: item.toUpperCase() }, { sales: sales, auction: auction }, { upsert: true });
-  });
-  auctions = {};
-  setTimeout(() => fetchAuctions(), 30 * 10000);
+        const lowest = Math.min(...sales.map(i => i.value));
+        const auction = auctions[item].filter(i => i.value === lowest)[0];
+        // await db.auctions.updateOne({ id: item.toUpperCase() }, { sales: sales, auction: auction }, { upsert: true });
+    });
+    auctions = {};
+    await db.dupes.deleteMany({})
+    Object.keys(tempDupedIDs).forEach(async key => {
+        if (tempDupedIDs[key] > 1) {
+            await db.dupes.updateOne({id:key}, {uuid: key, count: tempDupedIDs[key]}, {upsert: true});
+        }
+    })
+    tempDupedIDs = {};
+    setTimeout(() => fetchAuctions(), 30 * 10000);
 };
 
 const processAuctions = async function (data) {
-  data.auctions
-    .filter(a => a.bin)
-    .forEach(async auction => {
-      const item = await helper.decodeNBT(auction.item_bytes);
+    data.auctions
+        .filter(a => a.bin)
+        .forEach(async auction => {
+            const item = await helper.decodeNBT(auction.item_bytes);
 
-      const ExtraAttributes = item.tag.value.ExtraAttributes.value;
-      const { id, name } = getAttributes(ExtraAttributes, auction.item_name);
+            const ExtraAttributes = item.tag.value.ExtraAttributes.value;
+            const {id, name} = getAttributes(ExtraAttributes, auction.item_name);
 
-      const format = {
-        id: id.toUpperCase(),
-        name: helper.capitalize(name),
-        price: auction.starting_bid,
-        seller: auction.auctioneer,
-        ending: auction.end,
-        count: item.Count.value,
-		value: (item.Count.value <= 1) ? auction.starting_bid : auction.starting_bid / item.Count.value
-      };
+            const format = {
+                id: id.toUpperCase(),
+                name: helper.capitalize(name),
+                price: auction.starting_bid,
+                seller: auction.auctioneer,
+                ending: auction.end,
+                count: item.Count.value,
+                value: (item.Count.value <= 1) ? auction.starting_bid : auction.starting_bid / item.Count.value
+            };
+            if (ExtraAttributes.uuid) {
+                const uuid = ExtraAttributes.uuid.value;
+                Object.keys(tempDupedIDs).includes(uuid) ? tempDupedIDs[uuid]++ : tempDupedIDs[uuid] = 1;
+            }
+            Object.keys(auctions).includes(id) ? auctions[id].push(format) : (auctions[id] = [format]);
 
-      Object.keys(auctions).includes(id) ? auctions[id].push(format) : (auctions[id] = [format]);
-    });
+        });
 };
 
 const getAttributes = function (item, itemName) {
-  let itemId = item.id.value;
+    let itemId = item.id.value;
 
-  if (itemId == 'ENCHANTED_BOOK' && item.enchantments) {
-    const enchants = Object.keys(item.enchantments.value);
+    if (itemId == 'ENCHANTED_BOOK' && item.enchantments) {
+        const enchants = Object.keys(item.enchantments.value);
 
-    if (enchants.length == 1) {
-      const value = item.enchantments.value[enchants[0]].value;
+        if (enchants.length == 1) {
+            const value = item.enchantments.value[enchants[0]].value;
 
-      itemId = `${enchants[0]}_${value}`;
-      itemName = helper.capitalize(`${enchants[0]} ${value}`);
+            itemId = `${enchants[0]}_${value}`;
+            itemName = helper.capitalize(`${enchants[0]} ${value}`);
+        }
     }
-  }
 
-  if (itemId == 'PET') {
-    const pet = JSON.parse(item.petInfo.value);
-    const data = petGenerator.calculateSkillLevel(pet);
+    if (itemId == 'PET') {
+        const pet = JSON.parse(item.petInfo.value);
+        const data = petGenerator.calculateSkillLevel(pet);
 
-    if (data.level == 1 || data.level == 100 || data.level == 102 || data.level == 200) {
-      itemId = `lvl_${data.level}_${pet.tier}_${pet.type}`;
-      itemName = `[Lvl ${data.level}] ${helper.capitalize(`${pet.tier} ${pet.type}`)}`;
+        if (data.level == 1 || data.level == 100 || data.level == 102 || data.level == 200) {
+            itemId = `lvl_${data.level}_${pet.tier}_${pet.type}`;
+            itemName = `[Lvl ${data.level}] ${helper.capitalize(`${pet.tier} ${pet.type}`)}`;
+        }
     }
-  }
 
-  return {
-    id: itemId,
-    name: itemName
-  };
+    return {
+        id: itemId,
+        name: itemName
+    };
 };
 
 if (process.env.NODE_APP_INSTANCE === '0') fetchAuctions();

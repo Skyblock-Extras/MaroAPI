@@ -27,5 +27,6 @@ module.exports = {
   bazaar: require('./schemas/bazaar'),
   auctions: require('./schemas/auctions'),
   leaderboard: require('./schemas/leaderboard'),
+  dupes: require('./schemas/dupes'),
   hardcode: require('./schemas/hardcodedValues')
 };
