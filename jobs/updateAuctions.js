@@ -32,7 +32,9 @@ const updateAuctions = async function () {
     Object.keys(dupedAuctions).forEach(async key => {
         let arr = dupedAuctions[key];
         if (arr.length > 1) {
-            await db.dupes.updateOne({id:key}, {itemId: arr.id, count: arr.length, auctions: arr}, {upsert: true});
+            await db.dupes.updateOne({id: key},
+                {itemId: arr[0].id, count: arr.length, auctions: arr},
+                {upsert: true});
         }
     })
     dupedAuctions = {};
