@@ -2,8 +2,9 @@ const mongoose = require('mongoose');
 
 const dupeSchema = new mongoose.Schema({
     id: String,
-    uuid: String,
-    count: Number
+    itemId: String,
+    count: Number,
+    auctions: Object
 });
 
 module.exports = mongoose.model('dupes', dupeSchema, 'dupes');

@@ -20,7 +20,8 @@ const retrievePrices = async function () {
   dupedIds = [];
   for(const dupe of await db.dupes.find()){
     const item = {
-      uuid: dupe.uuid,
+      id: dupe.itemId ?? null,
+      uuid: dupe.id,
       count: dupe.count
     }
     dupedIds.push(item);

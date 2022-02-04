@@ -8,14 +8,8 @@ let prices = {};
 const retrievePrices = async function () {
 
   for (const item of await db.auctions.find()) {
-    // Temporarily (?) find CPC of outdated auctions
     let value = item.auction.value ?? 0;
     let lower = item.id.toLowerCase();
-    // if(value == 0 && !(lower in prices)){
-    //   let count = item.auction.count;
-    //   value = (count <= 1) ? item.auction.price : item.auction.price / count;
-    //   unfoundAuctions[lower] = value;
-    // }
     prices[lower] = parseInt(value);
   }
 

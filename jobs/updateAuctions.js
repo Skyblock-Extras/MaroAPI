@@ -4,7 +4,7 @@ const helper = require('../src/helper');
 const db = require('../storage/database');
 
 let auctions = {};
-let tempDupedIDs = {};
+let dupedAuctions = {};
 
 const fetchAuctions = async function (pages = 0) {
 
@@ -28,13 +28,14 @@ const updateAuctions = async function () {
         await db.auctions.updateOne({ id: item.toUpperCase() }, { sales: sales, auction: auction }, { upsert: true });
     });
     auctions = {};
-    await db.dupes.deleteMany({})
-    Object.keys(tempDupedIDs).forEach(async key => {
-        if (tempDupedIDs[key] > 1) {
-            await db.dupes.updateOne({id:key}, {uuid: key, count: tempDupedIDs[key]}, {upsert: true});
+    await db.dupes.deleteMany({}) // drop tables?
+    Object.keys(dupedAuctions).forEach(async key => {
+        let arr = dupedAuctions[key];
+        if (arr.length > 1) {
+            await db.dupes.updateOne({id:key}, {itemId: arr.id, count: arr.length, auctions: arr}, {upsert: true});
         }
     })
-    tempDupedIDs = {};
+    dupedAuctions = {};
     setTimeout(() => fetchAuctions(), 30 * 10000);
 };
 
@@ -58,7 +59,7 @@ const processAuctions = async function (data) {
             };
             if (ExtraAttributes.uuid) {
                 const uuid = ExtraAttributes.uuid.value;
-                Object.keys(tempDupedIDs).includes(uuid) ? tempDupedIDs[uuid]++ : tempDupedIDs[uuid] = 1;
+                Object.keys(dupedAuctions).includes(uuid) ? dupedAuctions[uuid].push(format) : dupedAuctions[uuid] = [format];
             }
             Object.keys(auctions).includes(id) ? auctions[id].push(format) : (auctions[id] = [format]);
 
