@@ -28,7 +28,6 @@ const updateAuctions = async function () {
         await db.auctions.updateOne({ id: item.toUpperCase() }, { sales: sales, auction: auction }, { upsert: true });
     });
     auctions = {};
-    await db.dupes.deleteMany({}) // drop tables?
     Object.keys(dupedAuctions).forEach(async key => {
         let arr = dupedAuctions[key];
         if (arr.length > 1) {
