@@ -31,9 +31,15 @@ const updateAuctions = async function () {
     Object.keys(dupedAuctions).forEach(async key => {
         let arr = dupedAuctions[key];
         if (arr.length > 1) {
-            await db.dupes.updateOne({id: key},
-                {itemId: arr[0].id, count: arr.length, auctions: arr},
-                {upsert: true});
+            const set = new Set();
+            for (const auction in arr){
+                set.add(auction.auctionId);
+            }
+            if(set.size > 1) {
+                await db.dupes.updateOne({id: key},
+                    {itemId: arr[0].id, count: arr.length, auctions: arr},
+                    {upsert: true});
+            }
         }
     })
     dupedAuctions = {};
@@ -56,7 +62,8 @@ const processAuctions = async function (data) {
                 seller: auction.auctioneer,
                 ending: auction.end,
                 count: item.Count.value,
-                value: (item.Count.value <= 1) ? auction.starting_bid : auction.starting_bid / item.Count.value
+                value: (item.Count.value <= 1) ? auction.starting_bid : auction.starting_bid / item.Count.value,
+                auctionId: auction.uuid
             };
             if (ExtraAttributes.uuid) {
                 const uuid = ExtraAttributes.uuid.value;

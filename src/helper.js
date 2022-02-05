@@ -18,6 +18,22 @@ const getKey = function (key) {
   return key;
 };
 
+
+const isEqual = function shallowEqual(object1, object2) {
+  const keys1 = Object.keys(object1);
+  const keys2 = Object.keys(object2);
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+  for (let key of keys1) {
+    if (object1[key] !== object2[key]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+
 const decodeNBT = async function (data) {
   const buffer = Buffer.from(data, 'base64');
   const item = await parseNbt(buffer);
