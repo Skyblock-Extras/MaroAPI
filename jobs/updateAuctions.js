@@ -8,7 +8,7 @@ let auctions = {};
 let dupedAuctions = {};
 
 const fetchAuctions = async function (pages = 0) {
-    start = Date.now();
+    start = Date.now() - 60_000 ;
     for (let i = 0; i <= pages; i++) {
         const auctionPage = await api.getAuctionPage(i);
         if (!auctionPage.success) continue;
@@ -48,7 +48,6 @@ const updateAuctions = async function () {
 };
 
 const processAuctions = async function (data) {
-    const now = Date.now();
     data.auctions
         // .filter(a => a.bin)
         .forEach(async auction => {
