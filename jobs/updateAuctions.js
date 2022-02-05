@@ -32,9 +32,9 @@ const updateAuctions = async function () {
         let arr = dupedAuctions[key];
         if (arr.length > 1) {
             const set = new Set();
-            for (const auction in arr){
+            arr.forEach(auction =>{
                 set.add(auction.auctionId);
-            }
+            })
             if(set.size > 1) {
                 await db.dupes.updateOne({id: key},
                     {itemId: arr[0].id, count: arr.length, auctions: arr},
