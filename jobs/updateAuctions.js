@@ -47,8 +47,9 @@ const updateAuctions = async function () {
 };
 
 const processAuctions = async function (data) {
+    const now = Date.now();
     data.auctions
-        .filter(a => a.bin)
+        // .filter(a => a.bin)
         .forEach(async auction => {
             const item = await helper.decodeNBT(auction.item_bytes);
 
@@ -60,16 +61,19 @@ const processAuctions = async function (data) {
                 name: helper.capitalize(name),
                 price: auction.starting_bid,
                 seller: auction.auctioneer,
+                start: auction.start,
                 ending: auction.end,
                 count: item.Count.value,
                 value: (item.Count.value <= 1) ? auction.starting_bid : auction.starting_bid / item.Count.value,
                 auctionId: auction.uuid
             };
-            if (ExtraAttributes.uuid) {
+            if (ExtraAttributes.uuid && now - format.start > 10 * 60 * 1000) {
                 const uuid = ExtraAttributes.uuid.value;
                 Object.keys(dupedAuctions).includes(uuid) ? dupedAuctions[uuid].push(format) : dupedAuctions[uuid] = [format];
             }
-            Object.keys(auctions).includes(id) ? auctions[id].push(format) : (auctions[id] = [format]);
+            if (auction.bin) {
+                Object.keys(auctions).includes(id) ? auctions[id].push(format) : (auctions[id] = [format]);
+            }
 
         });
 };
