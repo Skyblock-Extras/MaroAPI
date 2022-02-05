@@ -3,11 +3,12 @@ const api = require('../storage/requestHandler');
 const helper = require('../src/helper');
 const db = require('../storage/database');
 
+let start = -1;
 let auctions = {};
 let dupedAuctions = {};
 
 const fetchAuctions = async function (pages = 0) {
-
+    start = Date.now();
     for (let i = 0; i <= pages; i++) {
         const auctionPage = await api.getAuctionPage(i);
         if (!auctionPage.success) continue;
@@ -67,7 +68,7 @@ const processAuctions = async function (data) {
                 value: (item.Count.value <= 1) ? auction.starting_bid : auction.starting_bid / item.Count.value,
                 auctionId: auction.uuid
             };
-            if (ExtraAttributes.uuid && now - format.start > 10 * 60 * 1000) {
+            if (ExtraAttributes.uuid && start >= format.start) {
                 const uuid = ExtraAttributes.uuid.value;
                 Object.keys(dupedAuctions).includes(uuid) ? dupedAuctions[uuid].push(format) : dupedAuctions[uuid] = [format];
             }
