@@ -59,6 +59,7 @@ const parseItems = async function (base64, db) {
         }
       }
 
+      // PRICE PAYED IN DARK AUCTION
       const ExtraAttributes = item.tag.ExtraAttributes;
       let price = db[itemId] * item.Count;
 
@@ -66,6 +67,7 @@ const parseItems = async function (base64, db) {
         price = ExtraAttributes.winning_bid;
       }
 
+      // ENCHANTMENT BOOKS
       if (itemId == 'enchanted_book' && ExtraAttributes.enchantments) {
         const enchants = Object.keys(ExtraAttributes.enchantments);
 
@@ -81,18 +83,49 @@ const parseItems = async function (base64, db) {
           if (constants.blocked_enchants[itemId]?.includes(enchant[0])) continue;
 
           if (constants.allowed_enchants.includes(enchant[0])) {
+            // SILEX
+            if (enchant[0] === 'efficiency' && enchant[1] > 5 && itemId != 'stonk_pickaxe') {
+              price += (db['sil-ex'] ?? 0) * (enchant[1] - 5) * 0.7;
+            }
             // TODO: Factor Depreciation for enchants
             price += db[`${enchant[0]}_${enchant[1]}`] ?? 0;
           }
         }
       }
 
-      if (ExtraAttributes.rarity_upgrades > 0 && ExtraAttributes.originTag) {
-        if (ExtraAttributes.enchantments || constants.talismans[itemId]) {
-          price += db['recombobulator_3000'] / 2;
+      // HOT POTATO BOOKS
+      if (ExtraAttributes.hot_potato_count) {
+        if (ExtraAttributes.hot_potato_count > 10) {
+            price += (db['hot_potato_book'] ?? 0) * 10;
+            price += (db['fuming_potato_book'] ?? 0) * (ExtraAttributes.hot_potato_count - 10) * 0.6;
+        } else {
+            price += (db['hot_potato_book'] ?? 0) * ExtraAttributes.hot_potato_count;
         }
       }
 
+      // ART OF WAR
+      if (ExtraAttributes.art_of_war_count) {
+        price += (db['the_art_of_war'] ?? 0) * (ExtraAttributes.art_of_war_count) * 0.6;
+      }
+
+      // FARMING FOR DUMMIES
+      if (ExtraAttributes.farming_for_dummies_count) {
+        price += (db['farming_for_dummies'] ?? 0) * (ExtraAttributes.farming_for_dummies_count) * 0.5;
+      }
+
+      // ENRICHMENTS
+      if (ExtraAttributes.talisman_enrichment) {
+        price += (db['talisman_enrichment_' + ExtraAttributes.talisman_enrichment.toLowerCase()] ?? 0) * 0.75;
+      }
+
+      // RECOMBS
+      if (ExtraAttributes.rarity_upgrades > 0 && ExtraAttributes.originTag) {
+        if (ExtraAttributes.enchantments || constants.talismans[itemId]) {
+          price += db['recombobulator_3000'] * 0.8;
+        }
+      }
+
+      // GEMSTONES
       if (ExtraAttributes.gems) {
         const gems = helper.parseItemGems(ExtraAttributes.gems);
 
@@ -101,6 +134,7 @@ const parseItems = async function (base64, db) {
         }
       }
 
+      // REFORGES
       if (ExtraAttributes.modifier && !constants.talismans[itemId]) {
         const reforge = ExtraAttributes.modifier;
 
@@ -109,6 +143,7 @@ const parseItems = async function (base64, db) {
         }
       }
 
+      // DUNGEON STARS
       if (ExtraAttributes.dungeon_item_level > 5) {
         const starsUsed = ExtraAttributes.dungeon_item_level - 5;
 
@@ -117,16 +152,24 @@ const parseItems = async function (base64, db) {
         }
       }
 
+      // NECRON BLADE SCROLLS
       if (ExtraAttributes.ability_scroll) {
         for (const item of Object.values(ExtraAttributes.ability_scroll)) {
           price += db[item.toLowerCase()] ?? 0;
         }
       }
 
+      // GEMSTONE CHAMBERS
       if (ExtraAttributes.gemstone_slots) {
-        price += ExtraAttributes.gemstone_slots * db['gemstone_chamber'] ?? 0;
+        price += ExtraAttributes.gemstone_slots * (db['gemstone_chamber'] ?? 0) * 0.9;
+      }
+      if (['divan_chestplate', 'divan_leggings', 'divan_boots', 'divan_helmet'].includes(itemId)) {
+        if (ExtraAttributes?.gems?.unlocked_slots) {
+          price += ExtraAttributes.gems.unlocked_slots.length * (db['gemstone_chamber'] ?? 0) * 0.9;
+        }
       }
 
+      // DRILLS
       if (ExtraAttributes.drill_part_upgrade_module) {
         price += db[ExtraAttributes.drill_part_upgrade_module] ?? 0;
       }
@@ -139,6 +182,7 @@ const parseItems = async function (base64, db) {
         price += db[ExtraAttributes.drill_part_engine] ?? 0;
       }
 
+      // ETHERWARP
       if (ExtraAttributes.ethermerge > 0) {
         price += db['etherwarp_conduit'] ?? 0;
       }
