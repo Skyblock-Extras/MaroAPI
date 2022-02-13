@@ -17,6 +17,17 @@ const retrievePrices = async function () {
     if (index === -1) auctions.push(auction);
     else auctions[index] = auction;
   }
+  for (const item of await db.hardcode.find()){
+    const auction = {
+      id: item.id,
+      name: item.id,
+      value: item.price
+    }
+    const index = auctions.findIndex(i => i.id === item.id);
+
+    if (index === -1) auctions.push(auction);
+    else auctions[index] = auction;
+  }
   dupedIds = [];
   for(const dupe of await db.dupes.find()){
     const item = {
