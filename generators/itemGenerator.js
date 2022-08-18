@@ -73,7 +73,7 @@ const parseItems = async function (base64, db) {
 
         if (enchants.length == 1) {
           const value = ExtraAttributes.enchantments[enchants[0]];
-          price = db[`${enchants[0]}_${value}`] ?? 0;
+          price = db[`ENCHANTMENT_${enchants[0]}_${value}`] ?? 0;
           itemName = helper.capitalize(`${enchants[0]} ${value}`);
         }
       }

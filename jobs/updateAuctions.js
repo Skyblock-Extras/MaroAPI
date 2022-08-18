@@ -87,7 +87,7 @@ const getAttributes = function (item, itemName) {
         if (enchants.length == 1) {
             const value = item.enchantments.value[enchants[0]].value;
 
-            itemId = `${enchants[0]}_${value}`;
+            itemId = `ENCHANTMENT_${enchants[0]}_${value}`;
             itemName = helper.capitalize(`${enchants[0]} ${value}`);
         }
     }
