@@ -58,6 +58,9 @@ const startWebService = async function () {
   app.use('/api/stats', ApiStats);
 
   app.use(NotFound);
+  process.on('unhandledRejection', (reason, promise) => {
+    console.log('Unhandled Rejection at:', promise, 'reason:', reason);
+  });
 
   // const port = process.env.PORT || 3000;
   // app.listen(port, () => {
