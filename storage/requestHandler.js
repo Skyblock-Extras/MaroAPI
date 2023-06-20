@@ -1,5 +1,6 @@
 const URL = require('url').URL;
 const axios = require('axios');
+const axiosRetry = require('axios-retry')
 const config = require('../config');
 
 const HYPIXEL_API = 'https://api.hypixel.net';
@@ -10,6 +11,13 @@ const BAZAAR_ROUTE = HYPIXEL_API + '/skyblock/bazaar';
 
 let tokens = config.apiKeys;
 let currentIndex = 0;
+
+axiosRetry(axios, {
+  retries: 3,
+  retryDelay: (retryCount) => {
+    return retryCount * 1000;
+  }
+})
 
 const rotateKey = function () {
   if (currentIndex + 1 === tokens.length) currentIndex = -1;
