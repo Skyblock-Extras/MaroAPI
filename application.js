@@ -2,6 +2,14 @@ const express = require('express');
 const cluster = require('cluster');
 const path = require('path');
 const os = require('os');
+const http = require("http");
+const https = require("https"),
+  fs = require("fs");
+const credentials = {
+  key: fs.readFileSync("/etc/letsencrypt/live/maro.skyblockextras.com/privkey.pem"),
+  cert: fs.readFileSync("/etc/letsencrypt/live/maro.skyblockextras.com/fullchain.pem")
+};
+
 const app = express();
 
 const ValidateBody = require('./middleware/validateBody');
@@ -51,10 +59,14 @@ const startWebService = async function () {
 
   app.use(NotFound);
 
-  const port = process.env.PORT || 3000;
-  app.listen(port, () => {
-    console.log(`Worker ${cluster.worker.id} with process id ${process.pid} is now listening on port ${port}`);
-  });
+  // const port = process.env.PORT || 3000;
+  // app.listen(port, () => {
+  //   console.log(`Worker ${cluster.worker.id} with process id ${process.pid} is now listening on port ${port}`);
+  // });
+  let httpServer = http.createServer(app);
+  let httpsServer = https.createServer(credentials, app);
+  httpsServer.listen(8443);
+  httpServer.listen(8080);
 };
 
 if (cluster.isMaster) {
