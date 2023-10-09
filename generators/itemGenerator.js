@@ -53,7 +53,7 @@ const parseItems = async function (base64, db) {
         const dungeonItemLevel = item.tag.ExtraAttributes.dungeon_item_level;
 
         if (dungeonItemLevel > 5) {
-          const newStars = '⍟'.repeat(dungeonItemLevel - 5) + '✪'.repeat(5 - (dungeonItemLevel - 5));
+          const newStars = '⍟'.repeat(Number(dungeonItemLevel) - 5) + '✪'.repeat(5 - (Number(dungeonItemLevel) - 5));
 
           itemName = itemName.replace(/✪/g, '') + newStars;
         }
@@ -96,10 +96,10 @@ const parseItems = async function (base64, db) {
       // HOT POTATO BOOKS
       if (ExtraAttributes.hot_potato_count) {
         if (ExtraAttributes.hot_potato_count > 10) {
-            price += (db['hot_potato_book'] ?? 0) * 10;
-            price += (db['fuming_potato_book'] ?? 0) * (ExtraAttributes.hot_potato_count - 10) * 0.6;
+          price += (db['hot_potato_book'] ?? 0) * 10;
+          price += (db['fuming_potato_book'] ?? 0) * (ExtraAttributes.hot_potato_count - 10) * 0.6;
         } else {
-            price += (db['hot_potato_book'] ?? 0) * ExtraAttributes.hot_potato_count;
+          price += (db['hot_potato_book'] ?? 0) * ExtraAttributes.hot_potato_count;
         }
       }
 

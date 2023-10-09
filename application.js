@@ -63,10 +63,8 @@ const startWebService = async function () {
   // app.listen(port, () => {
   //   console.log(`Worker ${cluster.worker.id} with process id ${process.pid} is now listening on port ${port}`);
   // });
-  let httpServer = http.createServer(app);
   let httpsServer = https.createServer(credentials, app);
-  httpsServer.listen(8443);
-  httpServer.listen(8080);
+  httpsServer.listen(443);
 };
 
 if (cluster.isMaster) {
