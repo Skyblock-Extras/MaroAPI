@@ -58,16 +58,15 @@ const startWebService = async function () {
   app.use('/api/stats', ApiStats);
 
   app.use(NotFound);
-  process.on('unhandledRejection', (reason, promise) => {
-    console.log('Unhandled Rejection at:', promise, 'reason:', reason);
-  });
 
   // const port = process.env.PORT || 3000;
   // app.listen(port, () => {
   //   console.log(`Worker ${cluster.worker.id} with process id ${process.pid} is now listening on port ${port}`);
   // });
+  let httpServer = http.createServer(app);
   let httpsServer = https.createServer(credentials, app);
   httpsServer.listen(443);
+  httpServer.listen(8080);
 };
 
 if (cluster.isMaster) {
